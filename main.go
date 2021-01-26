@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"sort"
 
-	// "github.com/prometheus/client_golang/prometheus"
-	// "github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -54,15 +52,15 @@ func printSortedHeader(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func prometheusCount(w http.ResponseWriter, r *http.Request) {
-	http.Handle("/", promhttp.Handler())
-}
+// func prometheusCount(w http.ResponseWriter, r *http.Request) {
+// 	http.Handle("/", promhttp.Handler())
+// }
 
 func main() {
 	finish := make(chan bool)
 
 	server8080 := http.NewServeMux()
-	server8080.HandleFunc("/", printSortedHeader)
+	server8080.HandleFunc("/header", printSortedHeader)
 
 	// server9110 := http.NewServeMux()
 	// server9110.HandleFunc("/prometheus", prometheusCount)
@@ -71,10 +69,17 @@ func main() {
 		http.ListenAndServe(":8080", server8080)
 	}()
 
-	// go func() {
-	// 	http.Handle("/metrics", promhttp.Handler())
-	// 	http.ListenAndServe(":9110", server9110)
-	// }()
+	go func() {
+		// http.Handle("/metrics", promhttp.Handler())
+
+		// http.ListenAndServe(":9110", server9110)
+		// create a new mux server
+		server := http.NewServeMux()
+		// register a new handler for the /metrics endpoint
+		server.Handle("/metrics", promhttp.Handler())
+		// start an http server using the mux server
+		http.ListenAndServe(":9110", server)
+	}()
 
 	<-finish
 }

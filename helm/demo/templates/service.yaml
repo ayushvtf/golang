@@ -7,9 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.portheader }}
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.service.portmetric }}
+      targetPort: metric
+      protocol: TCP
+      name: metric
   selector:
     {{- include "demo.selectorLabels" . | nindent 4 }}

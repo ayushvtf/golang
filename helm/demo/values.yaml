@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: account-id.dkr.ecr.us-east-1.amazonaws.com/golang
+  repository: ayushvv/golang-demo
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -38,7 +38,8 @@ securityContext: {}
 
 service:
   type: NodePort
-  port: 8080
+  portheader: 8080
+  portmetric: 9110
 
 ingress:
   enabled: false
