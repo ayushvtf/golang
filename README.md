@@ -38,7 +38,7 @@ metric:
 kubectl port-forward service/helm-golang-demo 8081:9110 
 http://localhost:8081
 
-
+Header in sorted order (without table format, not working) and 
 Total request can be observed from metric 
 promhttp_metric_handler_requests_total for status code 200,500 and 503
 ```
