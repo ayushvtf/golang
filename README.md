@@ -19,6 +19,8 @@ docker push ayushvv/golang-demo:latest
 
 * Deploy via Helm chart 
 ```
+Connect to kubernetes cluster
+
 helm install  helm-golang  helm-golang/ --values  helm-golang/values.yaml
 
 default port: 
