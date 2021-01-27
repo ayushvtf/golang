@@ -1,5 +1,13 @@
 # golang
 
+* Build and run Local
+
+```
+go run main.go      
+http://localhost:8080
+http://localhost:9110
+```
+
 * Build and Push Docker image
 
 ```
