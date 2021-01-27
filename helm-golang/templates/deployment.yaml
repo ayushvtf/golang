@@ -42,11 +42,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /header
+              path: /
               port: http
           readinessProbe:
             httpGet:
-              path: /header
+              path: /
               port: http
               
           resources:

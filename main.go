@@ -4,81 +4,78 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// var (
+// 	RequestTotal = func() *prometheus.CounterVec {
+// 		return prometheus.NewCounterVec(
+// 			prometheus.CounterOpts{
+// 				Name: "promhttp_metric_handler_requests_total",
+// 				Help: "Total number of scrapes by HTTP status code.",
+// 			},
+// 			[]string{"code"},
+// 		)
+// 	}()
+// )
+
+// func init() {
+// 	prometheus.MustRegister(RequestTotal)
+// }
+
 func printSortedHeader(w http.ResponseWriter, r *http.Request) {
 
-	// print header
-	/*
-		for k, vals := range r.Header {
-			fmt.Print(k, " : ")
-			for _, v := range vals {
-				fmt.Println(v)
-			}
-		}
-	*/
+	headers := make(map[string]interface{})
 
-	var keyList []string
-	for key := range r.Header {
-		keyList = append(keyList, key)
-	}
-	sort.Strings(keyList)
-
-	// m := make(map[string]string)
-	// var tinderMatch = make(map[string]string)
-	// for _, key := range keyList {
-	// 	m[key] = r.Header[key]
-	// }
-
-	//fmt.Print(string(m))
-	for _, key := range keyList {
-		fmt.Fprintln(w, key, ":", r.Header[key], "</br>")
+	for k, v := range r.Header {
+		headers[strings.ToLower(k)] = string(v[0])
 	}
 
-	// t, err := template.ParseFiles("files/test.html")
+	keys := make([]string, 0, len(headers))
+	for k := range headers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Fprintln(w, k, ": ", headers[k])
+	}
+
+	// commented code for parsing map
+	// temp := `<table style="width:100%"> hahahaha
+	// 	{{range $key, $Value := .headers -}}
+	// 	<tr> {{$key}}: {{$Value}} neww </tr>
+	// 	{{end}}
+	// 	</table>`
+
+	// templ, err := template.New("headers").Parse(temp)
 	// if err != nil {
-	// 	fmt.Println(err)
+	// 	log.Fatal(err)
 	// }
-	// // items := struct {
-	// // 	Country string
-	// // 	City    string
-	// // }{
-	// // 	Country: "Australia",
-	// // 	City:    "Paris",
-	// // }
-	// t.Execute(w, keyList)
+
+	// err = templ.Execute(w, headers)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 }
-
-// func prometheusCount(w http.ResponseWriter, r *http.Request) {
-// 	http.Handle("/", promhttp.Handler())
-// }
 
 func main() {
 	finish := make(chan bool)
 
-	server8080 := http.NewServeMux()
-	server8080.HandleFunc("/header", printSortedHeader)
-
-	// server9110 := http.NewServeMux()
-	// server9110.HandleFunc("/prometheus", prometheusCount)
-
 	go func() {
-		http.ListenAndServe(":8080", server8080)
+		headerserver := http.NewServeMux()
+		headerserver.HandleFunc("/", printSortedHeader)
+		http.ListenAndServe(":8080", headerserver)
 	}()
 
 	go func() {
-		// http.Handle("/metrics", promhttp.Handler())
-
-		// http.ListenAndServe(":9110", server9110)
-		// create a new mux server
-		server := http.NewServeMux()
-		// register a new handler for the /metrics endpoint
-		server.Handle("/metrics", promhttp.Handler())
-		// start an http server using the mux server
-		http.ListenAndServe(":9110", server)
+		//RequestTotal.With(prometheus.Labels{"code": "200"}).Inc()
+		metricserver := http.NewServeMux()
+		metricserver.Handle("/", promhttp.Handler())
+		http.ListenAndServe(":9110", metricserver)
 	}()
 
 	<-finish
