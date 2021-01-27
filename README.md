@@ -12,11 +12,10 @@ docker push ayushvv/golang-demo:latest
 * Deploy via Helm chart 
 ```
 helm install  helm-golang  helm-golang/ --values  helm-golang/values.yaml
-```
 
 default port: 
 8080 for header and 9110 for metric
-
+```
 
 * Service Access
 
@@ -28,12 +27,11 @@ http://localhost:8081
 metric:
 kubectl port-forward service/helm-golang-demo 8081:9110 
 http://localhost:8081
-```
+
 
 Total request can be observed from metric 
 promhttp_metric_handler_requests_total for status code 200,500 and 503
-
-
+```
 
 * Custom ports for header and metric servers
 
